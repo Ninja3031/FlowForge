@@ -9,8 +9,14 @@ function required(name: string): string {
 }
 
 export const env = {
+  isProd: process.env.NODE_ENV === "production",
   port: Number(process.env.PORT ?? 4000),
   mysqlUrl: required("MYSQL_URL"),
   mongoUrl: required("MONGO_URL"),
   redisUrl: required("REDIS_URL"),
+  jwtAccessSecret: required("JWT_ACCESS_SECRET"),
+  jwtRefreshSecret: required("JWT_REFRESH_SECRET"),
+  clientOrigins: (process.env.CLIENT_ORIGINS ?? "http://localhost:3000,http://localhost:4200")
+    .split(",")
+    .map((origin) => origin.trim()),
 };

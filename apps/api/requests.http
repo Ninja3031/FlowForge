@@ -1,0 +1,46 @@
+@base = http://localhost:4000
+
+# @name login
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "rahul@acme.dev", "password": "Password@123" }
+
+###
+@token = {{login.response.body.accessToken}}
+
+GET {{base}}/auth/me
+Authorization: Bearer {{token}}
+
+###
+GET {{base}}/projects
+Authorization: Bearer {{token}}
+
+###
+GET {{base}}/tasks?projectId=1
+Authorization: Bearer {{token}}
+
+###
+POST {{base}}/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "projectId": 1, "title": "My first API task", "priority": "HIGH" }
+
+###
+PATCH {{base}}/tasks/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "status": "IN_PROGRESS" }
+
+###
+POST {{base}}/tasks/1/comments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "body": "Started working on this" }
+
+###
+GET {{base}}/projects/1/activity
+Authorization: Bearer {{token}}
