@@ -1,0 +1,12 @@
+{
+  "name": "flowforge",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "scripts": {
+    "dev:api": "pnpm --filter @flowforge/api dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:admin": "pnpm --filter admin start",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r --if-present typecheck"
+  }
+}
