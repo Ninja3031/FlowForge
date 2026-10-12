@@ -20,7 +20,8 @@ import { AdminUser, ROLE_LABELS, Role } from '../../core/models';
   selector: 'app-users',
   imports: [AsyncPipe, DatePipe, ReactiveFormsModule, RouterLink],
   template: `
-    <h1 class="page-title">Users</h1>
+    <p class="eyebrow">Everyone on the platform</p>
+    <h1 class="display page-title">Users</h1>
 
     <div class="filters">
       <input class="input search" type="search" placeholder="Search by name or email"
@@ -32,7 +33,7 @@ import { AdminUser, ROLE_LABELS, Role } from '../../core/models';
         }
       </select>
       @if (loading()) {
-        <span class="muted">Searching...</span>
+        <span class="searching"><span class="spinner"></span>Searching...</span>
       }
     </div>
 
@@ -41,14 +42,14 @@ import { AdminUser, ROLE_LABELS, Role } from '../../core/models';
     }
 
     @if (users$ | async; as users) {
-      <div class="card table-wrap">
+      <div class="card table-wrap fade-up">
         <table class="table">
           <thead>
             <tr><th>Name</th><th>Email</th><th>Role</th><th>Organization</th><th>Status</th><th>Joined</th></tr>
           </thead>
           <tbody>
             @for (user of users; track user.id) {
-              <tr>
+              <tr [style.animation-delay.ms]="$index * 30">
                 <td><a [routerLink]="['/admin/users', user.id]" class="strong-link">{{ user.name }}</a></td>
                 <td>{{ user.email }}</td>
                 <td>{{ roleLabels[user.role] }}</td>
@@ -61,7 +62,7 @@ import { AdminUser, ROLE_LABELS, Role } from '../../core/models';
                 <td>{{ user.createdAt | date: 'mediumDate' }}</td>
               </tr>
             } @empty {
-              <tr><td colspan="6" class="muted">No users match these filters.</td></tr>
+              <tr><td colspan="6" class="faint">No users match these filters.</td></tr>
             }
           </tbody>
         </table>
@@ -69,9 +70,15 @@ import { AdminUser, ROLE_LABELS, Role } from '../../core/models';
     }
   `,
   styles: `
-    .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
-    .search { max-width: 320px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; }
+    .search { max-width: 320px; border-radius: 999px; padding-left: 16px; }
     .role { width: auto; }
+    .searching { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--faint); }
+    .spinner {
+      width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent);
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   `,
 })
 export class UsersPage {

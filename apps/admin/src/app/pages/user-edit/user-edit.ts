@@ -10,21 +10,21 @@ import { AdminUser, ROLE_LABELS, Role } from '../../core/models';
 @Component({
   selector: 'app-user-edit',
   imports: [DatePipe, ReactiveFormsModule, RouterLink],
-  template: `
-    <a routerLink="/admin/users" class="muted back">Back to users</a>
+    template: `
+    <a routerLink="/admin/users" class="eyebrow back">&larr; Back to users</a>
 
     @if (loadError()) {
       <p class="error">{{ loadError() }}</p>
     }
 
     @if (user(); as user) {
-      <h1 class="page-title">{{ user.name }}</h1>
-      <p class="muted">
+      <h1 class="display page-title">{{ user.name }}</h1>
+      <p class="muted meta">
         {{ user.email }}, {{ user.organizationName ?? 'no organization' }}, joined
         {{ user.createdAt | date: 'mediumDate' }}
       </p>
 
-      <form [formGroup]="form" (ngSubmit)="save()" class="card form">
+      <form [formGroup]="form" (ngSubmit)="save()" class="card form fade-up">
         <label class="label" for="name">Name</label>
         <input id="name" class="input" formControlName="name" />
         @if (form.controls.name.touched && form.controls.name.invalid) {
@@ -41,14 +41,14 @@ import { AdminUser, ROLE_LABELS, Role } from '../../core/models';
           }
         </select>
         @if (lockedReason()) {
-          <p class="muted hint">{{ lockedReason() }}</p>
+          <p class="faint hint">{{ lockedReason() }}</p>
         }
 
         <label class="checkbox">
           <input type="checkbox" formControlName="isActive" />
           Account is active
         </label>
-        <p class="muted hint">Changing the role or disabling the account logs the user out everywhere.</p>
+        <p class="faint hint">Changing the role or disabling the account logs the user out everywhere.</p>
 
         @if (saveError()) {
           <p class="error">{{ saveError() }}</p>
@@ -67,16 +67,19 @@ import { AdminUser, ROLE_LABELS, Role } from '../../core/models';
         </div>
       </form>
     } @else if (!loadError()) {
-      <p class="muted">Loading user...</p>
+      <p class="faint">Loading user...</p>
     }
   `,
   styles: `
-    .back { display: inline-block; margin-bottom: 8px; font-size: 14px; }
-    .form { max-width: 460px; display: flex; flex-direction: column; gap: 6px; margin-top: 16px; }
+    .back { display: inline-block; transition: color 0.2s; }
+    .back:hover { color: var(--ink); }
+    .page-title { margin-bottom: 12px; }
+    .meta { margin: 0 0 24px; }
+    .form { max-width: 480px; display: flex; flex-direction: column; gap: 6px; padding: 24px; }
     .label { margin-top: 8px; }
-    .checkbox { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-weight: 600; font-size: 14px; }
+    .checkbox { display: flex; align-items: center; gap: 10px; margin-top: 16px; font-weight: 600; font-size: 14px; cursor: pointer; }
     .hint { margin: 2px 0 0; font-size: 13px; }
-    .actions { display: flex; gap: 8px; margin-top: 16px; }
+    .actions { display: flex; gap: 8px; margin-top: 20px; }
   `,
 })
 export class UserEditPage implements OnInit {

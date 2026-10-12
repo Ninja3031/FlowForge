@@ -15,22 +15,24 @@ const STATUS_LABELS: Record<string, string> = {
   selector: 'app-dashboard',
   imports: [AsyncPipe, DatePipe],
   template: `
-    <h1 class="page-title">Dashboard</h1>
+    <p class="eyebrow">Platform overview</p>
+    <h1 class="display page-title">Dashboard</h1>
 
     @if (vm$ | async; as vm) {
       @if (vm.error) {
         <p class="error">{{ vm.error }}</p>
       } @else if (vm.stats && vm.health) {
-        <section class="card health">
+        <section class="card health fade-up">
           <div>
             <h2>System health</h2>
-            <p class="muted">Checked {{ vm.checkedAt | date: 'mediumTime' }}. Refreshes every 30 seconds.</p>
+            <p class="faint">Checked {{ vm.checkedAt | date: 'mediumTime' }}. Refreshes every 30 seconds.</p>
           </div>
           <ul>
             @for (service of services; track service.key) {
-              <li>
-                <span class="dot" [class.down]="!vm.health.services[service.key]"></span>
-                {{ service.label }}: {{ vm.health.services[service.key] ? 'Up' : 'Down' }}
+              <li [class.down]="!vm.health.services[service.key]">
+                <span class="dot"></span>
+                {{ service.label }}
+                <span class="state">{{ vm.health.services[service.key] ? 'Up' : 'Down' }}</span>
               </li>
             }
           </ul>
@@ -38,15 +40,15 @@ const STATUS_LABELS: Record<string, string> = {
 
         <section class="figures">
           @for (figure of vm.figures; track figure.label) {
-            <div class="card figure">
-              <span class="muted">{{ figure.label }}</span>
-              <strong>{{ figure.value }}</strong>
+            <div class="card figure fade-up" [style.animation-delay.ms]="$index * 60">
+              <span class="eyebrow">{{ figure.label }}</span>
+              <strong class="display">{{ figure.value }}</strong>
             </div>
           }
         </section>
 
         <section class="split">
-          <div class="card">
+          <div class="card fade-up" style="animation-delay: 200ms">
             <h2>Tasks by status</h2>
             @for (row of vm.taskRows; track row.label) {
               <div class="bar-row">
@@ -56,7 +58,7 @@ const STATUS_LABELS: Record<string, string> = {
               </div>
             }
           </div>
-          <div class="card">
+          <div class="card fade-up" style="animation-delay: 280ms">
             <h2>Users by role</h2>
             @for (row of vm.roleRows; track row.label) {
               <div class="bar-row">
@@ -69,28 +71,35 @@ const STATUS_LABELS: Record<string, string> = {
         </section>
       }
     } @else {
-      <p class="muted">Loading dashboard...</p>
+      <p class="faint">Loading dashboard...</p>
     }
   `,
   styles: `
-    h2 { margin: 0 0 12px; font-size: 16px; }
-    .health { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    h2 { margin: 0 0 16px; font-size: 16px; font-weight: 700; }
+    .health { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; }
     .health h2 { margin: 0; }
-    .health p { margin: 4px 0 0; }
-    .health ul { display: flex; gap: 20px; list-style: none; margin: 0; padding: 0; align-items: center;
-      font-size: 14px; font-weight: 600; }
-    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #10b981; margin-right: 6px; }
-    .dot.down { background: #dc2626; }
-    .figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
-    .figure { display: flex; flex-direction: column; gap: 4px; }
-    .figure .muted { font-size: 13px; }
-    .figure strong { font-size: 26px; }
-    .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
-    .bar-row { display: grid; grid-template-columns: 120px 1fr 40px; align-items: center; gap: 10px;
-      font-size: 14px; margin-bottom: 8px; }
-    .bar { height: 8px; background: #eef1f5; border-radius: 4px; overflow: hidden; }
-    .bar div { height: 100%; background: var(--accent); }
-    .num { text-align: right; font-weight: 700; }
+    .health p { margin: 4px 0 0; font-size: 13px; }
+    .health ul { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; margin: 0; padding: 0; }
+    .health li {
+      display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px;
+      background: var(--raised); border: 1px solid var(--line); font-size: 14px; font-weight: 600;
+      color: var(--success); transition: color 0.4s, border-color 0.4s;
+    }
+    .health li.down { color: var(--danger); border-color: rgb(255 122 107 / 0.35); }
+    .health .state { color: var(--faint); font-weight: 500; }
+    /* Pulsing dot: green when up, red when down */
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: pulse-dot 2s ease-in-out infinite; }
+    .figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .figure { display: flex; flex-direction: column; gap: 10px; }
+    .figure strong { font-size: 40px; color: var(--ink); }
+    .split { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+    .bar-row { display: grid; grid-template-columns: 120px 1fr 36px; align-items: center; gap: 12px; font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+    .bar { height: 6px; background: var(--raised); border-radius: 3px; overflow: hidden; }
+    .bar div {
+      height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--glow));
+      box-shadow: 0 0 10px rgb(255 138 61 / 0.6); transition: width 1s var(--ease);
+    }
+    .num { text-align: right; font-weight: 700; color: var(--ink); }
   `,
 })
 export class DashboardPage {
