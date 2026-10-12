@@ -8,6 +8,8 @@ import { dateString, idSchema } from "../lib/validation";
 import { currentOrgId, currentUser, requireAuth, requireRole } from "../middleware/auth";
 import { getProjectInOrg } from "../services/access";
 import { getActivity, logActivity } from "../services/activity";
+import { cached, cacheKeys } from "../lib/cache";
+import { getProjectStats } from "../services/stats";
 
 export const projectsRouter = Router();
 projectsRouter.use(requireAuth);
@@ -81,6 +83,18 @@ projectsRouter.delete("/:id", requireRole("ORG_ADMIN"), async (req, res) => {
   const project = await getProjectInOrg(idSchema.parse(req.params.id), currentOrgId(req));
   await db.delete(projects).where(eq(projects.id, project.id));
   res.status(204).end();
+});
+
+// ---- Stats (cached in Redis for 60 seconds) ----
+
+projectsRouter.get("/:id/stats", async (req, res) => {
+  const project = await getProjectInOrg(idSchema.parse(req.params.id), currentOrgId(req));
+  const { data, hit } = await cached(cacheKeys.projectStats(project.id), 60, () =>
+    getProjectStats(project.id),
+  );
+  // Lets you see in DevTools whether the answer came from Redis
+  res.setHeader("X-Cache", hit ? "HIT" : "MISS");
+  res.json(data);
 });
 
 // ---- Sprints ----

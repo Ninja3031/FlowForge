@@ -76,3 +76,46 @@ export interface ActivityEntry {
   metadata: Record<string, unknown>;
   createdAt: string;
 }
+
+export interface ProjectStats {
+  total: number;
+  byStatus: Record<TaskStatus, number>;
+  openByPriority: Record<TaskPriority, number>;
+  overdue: number;
+  unassignedOpen: number;
+  openByAssignee: { name: string; count: number }[];
+}
+
+export interface TaskDraft {
+  title: string;
+  description: string | null;
+  priority: TaskPriority;
+  assigneeId: number | null;
+  sprintId: number | null;
+  dueDate: string | null;
+}
+
+export interface TaskSummary {
+  summary: string;
+  currentStatus: string;
+  blockers: string[];
+  nextSteps: string[];
+}
+
+export interface HealthReport {
+  _id: string;
+  health: "ON_TRACK" | "AT_RISK" | "OFF_TRACK";
+  score: number;
+  summary: string;
+  risks: string[];
+  recommendations: string[];
+  requestedByName: string;
+  mode: "live" | "demo";
+  createdAt: string;
+}
+
+export interface HealthJobStatus {
+  state: "waiting" | "active" | "completed" | "failed" | "delayed" | "prioritized" | "unknown";
+  report?: HealthReport;
+  error?: string;
+}

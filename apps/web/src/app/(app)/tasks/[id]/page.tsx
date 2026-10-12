@@ -1,5 +1,6 @@
 "use client";
 
+import { TaskSummaryCard } from "@/components/ai/TaskSummaryCard";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -128,6 +129,7 @@ export default function TaskPage() {
                 onChange={(e) => setDescription(e.target.value)} />
             </div>
             {detailsChanged && <button className="btn-primary">Save changes</button>}
+            <TaskSummaryCard taskId={task.id} />
           </form>
 
           <section className="panel p-5">

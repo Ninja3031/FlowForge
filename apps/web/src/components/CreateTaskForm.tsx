@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { api } from "@/lib/api";
 import { getErrorMessage } from "@/lib/errors";
 import { PRIORITIES, priorityLabel } from "@/lib/labels";
-import type { Sprint, Task, TaskPriority, Teammate } from "@/lib/types";
+import type { Sprint, Task, TaskDraft, TaskPriority, Teammate } from "@/lib/types";
 import { useAppDispatch } from "@/store/hooks";
 import { toastAdded } from "@/store/toastSlice";
 
@@ -12,17 +12,20 @@ interface Props {
   projectId: number;
   teammates: Teammate[];
   sprints: Sprint[];
+  // Filled in when the AI drafted this task, so the user can check it before saving
+  initial?: TaskDraft;
   onCreated: (task: Task) => void;
   onCancel: () => void;
 }
 
-export function CreateTaskForm({ projectId, teammates, sprints, onCreated, onCancel }: Props) {
+export function CreateTaskForm({ projectId, teammates, sprints, initial, onCreated, onCancel }: Props) {
   const dispatch = useAppDispatch();
-  const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState<TaskPriority>("MEDIUM");
-  const [assigneeId, setAssigneeId] = useState("");
-  const [sprintId, setSprintId] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [priority, setPriority] = useState<TaskPriority>(initial?.priority ?? "MEDIUM");
+  const [assigneeId, setAssigneeId] = useState(initial?.assigneeId ? String(initial.assigneeId) : "");
+  const [sprintId, setSprintId] = useState(initial?.sprintId ? String(initial.sprintId) : "");
+  const [dueDate, setDueDate] = useState(initial?.dueDate ?? "");
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(event: FormEvent) {
@@ -32,6 +35,7 @@ export function CreateTaskForm({ projectId, teammates, sprints, onCreated, onCan
       const { data } = await api.post<Task>("/tasks", {
         projectId,
         title,
+        description: description || null,
         priority,
         assigneeId: assigneeId ? Number(assigneeId) : null,
         sprintId: sprintId ? Number(sprintId) : null,
@@ -46,11 +50,21 @@ export function CreateTaskForm({ projectId, teammates, sprints, onCreated, onCan
   }
 
   return (
-    <form onSubmit={handleSubmit} className="panel mb-6 grid gap-4 p-5 md:grid-cols-4">
+    <form onSubmit={handleSubmit} className="panel mb-5 grid gap-4 p-5 md:grid-cols-4">
+      {initial && (
+        <p className="rounded-md bg-accent/10 px-3 py-2 text-sm text-accent-dark md:col-span-4">
+          AI filled in these details. Check them, then create the task.
+        </p>
+      )}
       <div className="md:col-span-4">
         <label htmlFor="t-title" className="label">Title</label>
         <input id="t-title" className="input" value={title} required autoFocus
           placeholder="What needs to be done?" onChange={(e) => setTitle(e.target.value)} />
+      </div>
+      <div className="md:col-span-4">
+        <label htmlFor="t-desc" className="label">Description</label>
+        <textarea id="t-desc" className="input" rows={2} value={description}
+          onChange={(e) => setDescription(e.target.value)} />
       </div>
       <div>
         <label htmlFor="t-priority" className="label">Priority</label>

@@ -16,6 +16,9 @@ export const env = {
   redisUrl: required("REDIS_URL"),
   jwtAccessSecret: required("JWT_ACCESS_SECRET"),
   jwtRefreshSecret: required("JWT_REFRESH_SECRET"),
+    // Leave empty to run AI features in demo mode (canned answers, no API calls)
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
+  aiModel: process.env.AI_MODEL ?? "claude-haiku-5-5",
   clientOrigins: (process.env.CLIENT_ORIGINS ?? "http://localhost:3000,http://localhost:4200")
     .split(",")
     .map((origin) => origin.trim()),

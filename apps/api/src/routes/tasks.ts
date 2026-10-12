@@ -1,3 +1,4 @@
+import { cacheKeys, invalidate } from "../lib/cache";
 import { Router } from "express";
 import { and, asc, eq, getTableColumns, like, max, or, type SQL } from "drizzle-orm";
 import { alias } from "drizzle-orm/mysql-core";
@@ -138,6 +139,7 @@ tasksRouter.post("/", async (req, res) => {
   });
 
   const task = await loadTask(taskId, project.key);
+  invalidate(cacheKeys.projectStats(project.id));
   logActivity({
     user,
     organizationId: orgId,
@@ -183,6 +185,7 @@ tasksRouter.patch("/:id", async (req, res) => {
   }
 
   const updated = await loadTask(task.id, project.key);
+  invalidate(cacheKeys.projectStats(project.id));
   if (Object.keys(changes).length > 0) {
     logActivity({
       user,
@@ -204,6 +207,7 @@ tasksRouter.delete("/:id", requireRole("ORG_ADMIN", "PROJECT_MANAGER"), async (r
   const { task, project } = await getTaskInOrg(idSchema.parse(req.params.id), orgId);
 
   await db.delete(tasks).where(eq(tasks.id, task.id));
+  invalidate(cacheKeys.projectStats(project.id));
   logActivity({
     user,
     organizationId: orgId,

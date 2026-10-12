@@ -6,10 +6,13 @@ import { useParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { getErrorMessage } from "@/lib/errors";
 import { PRIORITIES, priorityLabel } from "@/lib/labels";
-import type { Project, Sprint, Task, Teammate } from "@/lib/types";
+import type { Project, Sprint, Task, TaskDraft, Teammate } from "@/lib/types";
 import { useDebounce } from "@/hooks/useDebounce";
 import { KanbanBoard } from "@/components/kanban/KanbanBoard";
 import { CreateTaskForm } from "@/components/CreateTaskForm";
+import { ProjectStatsBar } from "@/components/ProjectStatsBar";
+import { AiTaskInput } from "@/components/ai/AiTaskInput";
+import { HealthReportPanel } from "@/components/ai/HealthReportPanel";
 
 export default function ProjectBoardPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +23,7 @@ export default function ProjectBoardPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [draft, setDraft] = useState<TaskDraft | undefined>();
 
   // Filters
   const [search, setSearch] = useState("");
@@ -79,25 +83,43 @@ export default function ProjectBoardPage() {
   return (
     <div>
       <Link href="/projects" className="text-sm font-medium text-muted hover:text-ink">Projects</Link>
-      <div className="mt-1 mb-5 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
-          {project.description && <p className="text-sm text-muted">{project.description}</p>}
-        </div>
-        {!showForm && <button className="btn-primary" onClick={() => setShowForm(true)}>New task</button>}
+      <div className="mt-1 mb-5">
+        <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
+        {project.description && <p className="text-sm text-muted">{project.description}</p>}
       </div>
 
-      {showForm && (
+      <ProjectStatsBar projectId={project.id} tasks={tasks} />
+      <HealthReportPanel projectId={project.id} />
+
+      {showForm ? (
         <CreateTaskForm
+          // A new key resets the form when a new AI draft arrives
+          key={draft ? JSON.stringify(draft) : "manual"}
           projectId={project.id}
           teammates={teammates}
           sprints={sprints}
+          initial={draft}
           onCreated={(task) => {
             setTasks((prev) => [...prev, task]);
             setShowForm(false);
+            setDraft(undefined);
           }}
-          onCancel={() => setShowForm(false)}
+          onCancel={() => {
+            setShowForm(false);
+            setDraft(undefined);
+          }}
         />
+      ) : (
+        <div className="mb-5 flex flex-wrap items-center gap-3">
+          <AiTaskInput
+            projectId={project.id}
+            onDraft={(d) => {
+              setDraft(d);
+              setShowForm(true);
+            }}
+          />
+          <button className="btn-primary" onClick={() => setShowForm(true)}>New task</button>
+        </div>
       )}
 
       <div className="mb-5 flex flex-wrap items-center gap-3">
