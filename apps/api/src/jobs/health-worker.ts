@@ -1,6 +1,5 @@
 import { Worker } from "bullmq";
-import Redis from "ioredis";
-import { env } from "../config/env";
+import { createQueueConnection } from "../db/redis";
 import { HealthReport } from "../models/health-report";
 import { aiMode } from "../services/ai";
 import { generateProjectHealth } from "../services/ai-features";
@@ -24,7 +23,7 @@ export function startHealthWorker() {
     },
     {
       // Workers need their own Redis connection because they wait on it
-      connection: new Redis(env.redisUrl, { maxRetriesPerRequest: null }),
+      connection: createQueueConnection(),
       concurrency: 2,
     },
   );

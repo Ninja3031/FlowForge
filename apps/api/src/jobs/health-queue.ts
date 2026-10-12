@@ -1,5 +1,5 @@
 import { Queue } from "bullmq";
-import { redis } from "../db/redis";
+import { createQueueConnection } from "../db/redis";
 
 export const HEALTH_QUEUE = "project-health";
 
@@ -15,7 +15,7 @@ export interface HealthJobResult {
 
 // Jobs are stored in Redis until a worker picks them up
 export const healthQueue = new Queue<HealthJobData, HealthJobResult>(HEALTH_QUEUE, {
-  connection: redis,
+  connection: createQueueConnection(),
   defaultJobOptions: {
     attempts: 2,
     backoff: { type: "exponential", delay: 3000 },
