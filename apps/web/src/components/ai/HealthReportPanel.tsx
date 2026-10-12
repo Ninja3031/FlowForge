@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { isAxiosError } from "axios";
+import { AnimatePresence, motion } from "motion/react";
 import { api } from "@/lib/api";
 import { getErrorMessage } from "@/lib/errors";
 import { timeAgo } from "@/lib/activity";
@@ -10,9 +11,9 @@ import { useAppDispatch } from "@/store/hooks";
 import { toastAdded } from "@/store/toastSlice";
 
 const healthStyle: Record<HealthReport["health"], { label: string; className: string }> = {
-  ON_TRACK: { label: "On track", className: "bg-emerald-50 text-emerald-700" },
-  AT_RISK: { label: "At risk", className: "bg-amber-50 text-amber-700" },
-  OFF_TRACK: { label: "Off track", className: "bg-red-50 text-red-700" },
+  ON_TRACK: { label: "On track", className: "bg-success/15 text-success" },
+  AT_RISK: { label: "At risk", className: "bg-accent/15 text-accent-soft" },
+  OFF_TRACK: { label: "Off track", className: "bg-danger/15 text-danger" },
 };
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -62,17 +63,17 @@ export function HealthReportPanel({ projectId }: { projectId: number }) {
   const style = report ? healthStyle[report.health] : null;
 
   return (
-    <section className="panel mb-5 p-4">
+    <section className="panel mb-5 animate-fade-up p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h2 className="font-bold">Project health</h2>
+          <h2 className="font-bold"><span className="text-accent">✦</span> Project health</h2>
           {report && style && (
-            <span className={`rounded px-2 py-0.5 text-xs font-bold ${style.className}`}>
+            <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${style.className}`}>
               {style.label}, {report.score}/100
             </span>
           )}
           {report && (
-            <button className="text-sm font-semibold text-accent hover:underline" onClick={() => setOpen(!open)}>
+            <button className="link text-sm" onClick={() => setOpen(!open)}>
               {open ? "Hide details" : "Show details"}
             </button>
           )}
@@ -88,11 +89,20 @@ export function HealthReportPanel({ projectId }: { projectId: number }) {
         </p>
       )}
 
+      <AnimatePresence initial={false}>
       {report && open && (
-        <div className="mt-4 grid gap-4 text-sm md:grid-cols-[2fr_1fr_1fr]">
+        <motion.div
+          key="details"
+          className="overflow-hidden"
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        >
+        <div className="grid gap-6 pt-5 text-sm leading-relaxed md:grid-cols-[2fr_1fr_1fr]">
           <div>
             <p>{report.summary}</p>
-            <p className="mt-2 text-xs text-muted">
+            <p className="mt-2 text-xs text-faint">
               Requested by {report.requestedByName}, {timeAgo(report.createdAt)}
               {report.mode === "demo" && " (demo mode)"}
             </p>
@@ -100,17 +110,19 @@ export function HealthReportPanel({ projectId }: { projectId: number }) {
           <div>
             <h3 className="mb-1 font-semibold">Risks</h3>
             {report.risks.length === 0 ? (
-              <p className="text-muted">None found</p>
+              <p className="text-faint">None found</p>
             ) : (
-              <ul className="list-disc space-y-1 pl-4">{report.risks.map((r) => <li key={r}>{r}</li>)}</ul>
+              <ul className="list-disc space-y-1 pl-4 text-muted">{report.risks.map((r) => <li key={r}>{r}</li>)}</ul>
             )}
           </div>
           <div>
             <h3 className="mb-1 font-semibold">Recommendations</h3>
-            <ul className="list-disc space-y-1 pl-4">{report.recommendations.map((r) => <li key={r}>{r}</li>)}</ul>
+            <ul className="list-disc space-y-1 pl-4 text-muted">{report.recommendations.map((r) => <li key={r}>{r}</li>)}</ul>
           </div>
         </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </section>
   );
 }

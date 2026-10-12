@@ -43,12 +43,12 @@ export default function LoginPage() {
 
   return (
     <AuthCard
-      title="Log in"
+      title="Welcome back"
       subtitle="Pick up where your team left off."
       footer={
         <>
           New here?{" "}
-          <Link href="/register" className="font-semibold text-accent hover:underline">
+          <Link href="/register" className="link">
             Create an organization
           </Link>
         </>
@@ -65,17 +65,17 @@ export default function LoginPage() {
           <input id="password" type="password" className="input" value={password}
             onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
         </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button type="submit" className="btn-primary w-full" disabled={submitting}>
+        {error && <p className="text-sm text-danger">{error}</p>}
+        <button type="submit" className="btn-primary w-full py-2.5" disabled={submitting}>
           {submitting ? "Logging in..." : "Log in"}
         </button>
       </form>
 
-      <div className="mt-4 rounded-md border border-dashed border-line bg-white p-3 text-sm">
+      <div className="mt-5 rounded-lg border border-dashed border-line p-3 text-sm">
         <p className="text-muted">Just looking around? Use the demo project manager account.</p>
         <button
           type="button"
-          className="mt-2 font-semibold text-accent hover:underline"
+          className="link mt-1.5"
           onClick={() => {
             setEmail(DEMO.email);
             setPassword(DEMO.password);

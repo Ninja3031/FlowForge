@@ -2,40 +2,124 @@
 
 @theme inline {
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Warm, dark palette. Text is soft cream instead of pure white so it's easy on the eyes. */
 @theme {
-  --color-canvas: #f3f5f8;
-  --color-ink: #17202e;
-  --color-muted: #5b6575;
-  --color-line: #dde2ea;
-  --color-accent: #0e7c6b;
-  --color-accent-dark: #0a5f52;
+  --color-canvas: #0c0a09;
+  --color-surface: #151210;
+  --color-raised: #1d1916;
+  --color-line: #2b2521;
+  --color-ink: #ece3d9;
+  --color-muted: #a39687;
+  --color-faint: #6f655c;
+  --color-accent: #ff8a3d;
+  --color-accent-soft: #ffb47a;
+  --color-glow: #ffe3bf;
+  --color-danger: #ff7a6b;
+  --color-success: #9cc79a;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-fade-up: fade-up 0.6s var(--ease-out-soft) both;
+  --animate-ember: ember 7s linear infinite;
+  --animate-sun: sun-breathe 6s ease-in-out infinite;
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-pulse-soft: pulse-soft 1.6s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes ember {
+    0% { transform: translate(0, 0) scale(1); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translate(var(--drift, 20px), -70vh) scale(0.3); opacity: 0; }
+  }
+  @keyframes sun-breathe {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.02); filter: brightness(1.08); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 0.35; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
   @apply bg-canvas text-ink antialiased;
 }
 
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  color: var(--color-glow);
+}
+
+/* Film grain over the whole app, like a cinematic shot */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
 @layer components {
+  .display {
+    @apply font-display font-black uppercase leading-[0.85] tracking-[-0.02em];
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-faint;
+  }
+  .panel {
+    @apply rounded-xl border border-line bg-surface;
+    box-shadow: inset 0 1px 0 rgb(255 240 225 / 0.03);
+  }
   .input {
-    @apply w-full rounded-md border border-line bg-white px-3 py-2 text-sm outline-none
-      focus:border-accent focus:ring-2 focus:ring-accent/20;
+    @apply w-full rounded-lg border border-line bg-raised px-3 py-2 text-sm text-ink outline-none
+      transition-[border-color,box-shadow] duration-200 placeholder:text-faint
+      focus:border-accent/60 focus:ring-4 focus:ring-accent/10;
   }
   .label {
-    @apply mb-1 block text-sm font-medium text-ink;
+    @apply mb-1.5 block text-sm font-medium text-muted;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-md bg-accent px-4 py-2 text-sm font-semibold
-      text-white hover:bg-accent-dark disabled:cursor-not-allowed disabled:opacity-60
+    @apply inline-flex items-center justify-center rounded-full bg-accent px-5 py-2 text-sm font-bold
+      text-[#1b0e05] transition-all duration-300 ease-out-soft
+      hover:bg-accent-soft hover:shadow-[0_0_32px_-6px_var(--color-accent)]
+      active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none
       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
   }
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-md border border-line bg-white px-4 py-2
-      text-sm font-semibold text-ink hover:bg-slate-50 disabled:opacity-60
+    @apply inline-flex items-center justify-center rounded-full border border-line bg-transparent px-5 py-2
+      text-sm font-semibold text-ink transition-all duration-300 ease-out-soft
+      hover:border-faint hover:bg-raised active:scale-[0.98] disabled:opacity-50
       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent;
   }
-  .panel {
-    @apply rounded-lg border border-line bg-white;
+  .link {
+    @apply font-semibold text-accent-soft transition-colors hover:text-glow;
+  }
+  .avatar {
+    @apply flex shrink-0 items-center justify-center rounded-full bg-raised font-bold text-muted ring-1 ring-line;
+  }
+}
+
+/* Respect people who turn off motion in their system settings */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

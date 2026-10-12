@@ -68,24 +68,24 @@ export default function ProjectBoardPage() {
     };
   }, [id, debouncedSearch, priority, assigneeId]);
 
-  if (error) {
+    if (error) {
     return (
       <div>
-        <p className="text-red-600">{error}</p>
-        <Link href="/projects" className="mt-2 inline-block text-sm font-semibold text-accent">Back to projects</Link>
+        <p className="text-danger">{error}</p>
+        <Link href="/projects" className="link mt-2 inline-block text-sm">Back to projects</Link>
       </div>
     );
   }
-  if (!project) return <p className="text-sm text-muted">Loading board...</p>;
+  if (!project) return <p className="animate-pulse text-sm text-faint">Loading board...</p>;
 
   const hasFilters = Boolean(search || priority || assigneeId);
 
   return (
     <div>
-      <Link href="/projects" className="text-sm font-medium text-muted hover:text-ink">Projects</Link>
-      <div className="mt-1 mb-5">
-        <h1 className="text-2xl font-bold tracking-tight">{project.name}</h1>
-        {project.description && <p className="text-sm text-muted">{project.description}</p>}
+      <Link href="/projects" className="eyebrow transition-colors hover:text-ink">&larr; Projects</Link>
+      <div className="mt-3 mb-8">
+        <h1 className="display text-5xl sm:text-6xl">{project.name}</h1>
+        {project.description && <p className="mt-3 max-w-2xl text-muted">{project.description}</p>}
       </div>
 
       <ProjectStatsBar projectId={project.id} tasks={tasks} />
@@ -127,7 +127,7 @@ export default function ProjectBoardPage() {
           type="search"
           aria-label="Search tasks"
           placeholder="Search tasks"
-          className="input max-w-xs"
+          className="input max-w-xs rounded-full px-4"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -143,7 +143,7 @@ export default function ProjectBoardPage() {
         </select>
         {hasFilters && (
           <button
-            className="text-sm font-semibold text-accent hover:underline"
+            className="link text-sm"
             onClick={() => {
               setSearch("");
               setPriority("");

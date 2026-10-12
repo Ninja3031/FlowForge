@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "motion/react";
+import { ForgeBackdrop } from "./ForgeBackdrop";
 
 export function AuthCard({
   title,
@@ -12,17 +16,25 @@ export function AuthCard({
   footer: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        <Link href="/" className="mb-8 flex items-center gap-2 text-lg font-extrabold tracking-tight">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-accent text-white">F</span>
+    <main className="relative flex min-h-screen items-center justify-center px-4 py-16">
+      <ForgeBackdrop size="soft" />
+
+      <motion.div
+        className="relative w-full max-w-sm"
+        initial={{ opacity: 0, y: 24, filter: "blur(6px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <Link href="/" className="display mb-8 block text-center text-2xl">
           FlowForge
         </Link>
-        <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-        <p className="mt-1 mb-6 text-sm text-muted">{subtitle}</p>
-        {children}
-        <p className="mt-6 text-sm text-muted">{footer}</p>
-      </div>
+        <div className="panel bg-surface/80 p-7 shadow-2xl shadow-black/60 backdrop-blur-md">
+          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+          <p className="mt-1 mb-6 text-sm text-muted">{subtitle}</p>
+          {children}
+        </div>
+        <p className="mt-6 text-center text-sm text-muted">{footer}</p>
+      </motion.div>
     </main>
   );
 }

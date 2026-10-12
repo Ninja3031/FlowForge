@@ -29,18 +29,21 @@ export function ProjectStatsBar({ projectId, tasks }: { projectId: number; tasks
     { label: "Unassigned", value: stats.unassignedOpen },
   ];
 
-  return (
-    <div className="panel mb-5 p-4">
+    return (
+    <div className="panel mb-5 animate-fade-up p-5">
       <dl className="flex flex-wrap gap-x-10 gap-y-3">
         {figures.map((f) => (
           <div key={f.label}>
-            <dt className="text-xs text-muted">{f.label}</dt>
-            <dd className={`text-xl font-bold ${f.alert ? "text-red-600" : ""}`}>{f.value}</dd>
+            <dt className="eyebrow">{f.label}</dt>
+            <dd className={`display mt-1 text-3xl ${f.alert ? "text-danger" : ""}`}>{f.value}</dd>
           </div>
         ))}
       </dl>
-      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100" aria-hidden>
-        <div className="h-full bg-emerald-500 transition-[width]" style={{ width: `${percent}%` }} />
+      <div className="mt-4 h-1 overflow-hidden rounded-full bg-raised" aria-hidden>
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-accent to-glow transition-[width] duration-1000 ease-out-soft"
+          style={{ width: `${percent}%`, boxShadow: "0 0 12px var(--color-accent)" }}
+        />
       </div>
     </div>
   );

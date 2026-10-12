@@ -146,14 +146,15 @@ export function KanbanBoard({ tasks, setTasks }: Props) {
         setTasks(snapshot.current);
       }}
     >
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="-mx-5 flex gap-4 overflow-x-auto px-5 pb-6">
         {STATUSES.map((status) => (
           <KanbanColumn key={status} status={status} tasks={columns[status]} />
         ))}
       </div>
-      <DragOverlay>
+      {/* The card you're holding: tilted, glowing, and eased back into place on drop */}
+      <DragOverlay dropAnimation={{ duration: 280, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
         {activeTask && (
-          <div className="w-68 rotate-2 rounded-md border border-accent bg-white p-3 shadow-xl">
+          <div className="w-66 rotate-2 cursor-grabbing rounded-xl border border-accent/50 bg-raised p-3.5 shadow-2xl shadow-black/60 ring-1 ring-accent/20">
             <TaskCardContent task={activeTask} />
           </div>
         )}

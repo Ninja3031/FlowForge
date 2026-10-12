@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Provider } from "react-redux";
+import { MotionConfig } from "motion/react";
 import { store } from "@/store";
 import { refreshSession } from "@/lib/api";
 import { Toaster } from "@/components/Toaster";
@@ -17,9 +18,12 @@ function SessionRestorer() {
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
-      <SessionRestorer />
-      {children}
-      <Toaster />
+      {/* reducedMotion="user": animations calm down if the person turned off motion on their device */}
+      <MotionConfig reducedMotion="user">
+        <SessionRestorer />
+        {children}
+        <Toaster />
+      </MotionConfig>
     </Provider>
   );
 }

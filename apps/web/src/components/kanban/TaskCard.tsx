@@ -10,20 +10,20 @@ export function TaskCardContent({ task }: { task: Task }) {
   return (
     <>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-bold text-muted">{task.key}</span>
-        <span className={`rounded px-1.5 py-0.5 text-xs font-semibold ${priorityStyle[task.priority]}`}>
+        <span className="text-[11px] font-bold tracking-[0.15em] text-faint">{task.key}</span>
+        <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${priorityStyle[task.priority]}`}>
           {priorityLabel[task.priority]}
         </span>
       </div>
-      <Link href={`/tasks/${task.id}`} className="mt-1.5 block text-sm font-semibold leading-snug hover:text-accent">
+      <Link
+        href={`/tasks/${task.id}`}
+        className="mt-2 block text-sm font-semibold leading-snug text-ink transition-colors hover:text-accent-soft"
+      >
         {task.title}
       </Link>
-      <div className="mt-3 flex items-center justify-between text-xs text-muted">
+      <div className="mt-4 flex items-center justify-between text-xs text-faint">
         <span>{task.dueDate ? `Due ${task.dueDate}` : ""}</span>
-        <span
-          title={task.assigneeName ?? "Unassigned"}
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-ink"
-        >
+        <span title={task.assigneeName ?? "Unassigned"} className="avatar h-6 w-6 text-[10px]">
           {initials(task.assigneeName)}
         </span>
       </div>
@@ -42,11 +42,14 @@ export function TaskCard({ task }: { task: Task }) {
       style={{ transform: CSS.Transform.toString(transform), transition }}
       {...attributes}
       {...listeners}
-      className={`cursor-grab rounded-md border border-line bg-white p-3 active:cursor-grabbing ${
-        isDragging ? "opacity-40" : ""
+      className={`cursor-grab rounded-xl border border-line bg-raised p-3.5 transition-[border-color,box-shadow,opacity] duration-300 hover:border-faint/60 hover:shadow-lg hover:shadow-black/40 active:cursor-grabbing ${
+        isDragging ? "opacity-30" : ""
       }`}
     >
-      <TaskCardContent task={task} />
+      {/* Inner wrapper fades in when the card first appears (the outer div is moved by drag-and-drop) */}
+      <div className="animate-fade-up">
+        <TaskCardContent task={task} />
+      </div>
     </div>
   );
 }

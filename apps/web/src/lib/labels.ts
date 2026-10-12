@@ -11,11 +11,12 @@ export const statusLabel: Record<TaskStatus, string> = {
 };
 
 // Colour bar on top of each Kanban column
+// Colour of the small dot and glow for each Kanban column
 export const statusColor: Record<TaskStatus, string> = {
-  TODO: "bg-slate-400",
-  IN_PROGRESS: "bg-blue-500",
-  IN_REVIEW: "bg-amber-500",
-  DONE: "bg-emerald-500",
+  TODO: "#8a7e74",
+  IN_PROGRESS: "#ff8a3d",
+  IN_REVIEW: "#e9c27a",
+  DONE: "#9cc79a",
 };
 
 export const priorityLabel: Record<TaskPriority, string> = {
@@ -26,10 +27,10 @@ export const priorityLabel: Record<TaskPriority, string> = {
 };
 
 export const priorityStyle: Record<TaskPriority, string> = {
-  LOW: "bg-slate-100 text-slate-600",
-  MEDIUM: "bg-sky-50 text-sky-700",
-  HIGH: "bg-orange-50 text-orange-700",
-  URGENT: "bg-red-50 text-red-700",
+  LOW: "bg-ink/5 text-faint",
+  MEDIUM: "bg-ink/8 text-muted",
+  HIGH: "bg-accent/12 text-accent-soft",
+  URGENT: "bg-danger/15 text-danger",
 };
 
 export const roleLabel: Record<Role, string> = {

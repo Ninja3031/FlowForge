@@ -48,7 +48,7 @@ export default function RegisterPage() {
       footer={
         <>
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold text-accent hover:underline">Log in</Link>
+          <Link href="/login" className="link">Log in</Link>
         </>
       }
     >
@@ -72,10 +72,10 @@ export default function RegisterPage() {
           <label htmlFor="password" className="label">Password</label>
           <input id="password" type="password" className="input" value={form.password} minLength={8}
             onChange={(e) => update("password", e.target.value)} required autoComplete="new-password" />
-          <p className="mt-1 text-xs text-muted">At least 8 characters.</p>
+          <p className="mt-1 text-xs text-faint">At least 8 characters.</p>
         </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button type="submit" className="btn-primary w-full" disabled={submitting}>
+        {error && <p className="text-sm text-danger">{error}</p>}
+        <button type="submit" className="btn-primary w-full py-2.5" disabled={submitting}>
           {submitting ? "Creating..." : "Create organization"}
         </button>
       </form>

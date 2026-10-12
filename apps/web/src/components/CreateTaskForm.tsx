@@ -50,9 +50,9 @@ export function CreateTaskForm({ projectId, teammates, sprints, initial, onCreat
   }
 
   return (
-    <form onSubmit={handleSubmit} className="panel mb-5 grid gap-4 p-5 md:grid-cols-4">
+      <form onSubmit={handleSubmit} className="panel mb-6 grid animate-fade-up gap-4 p-6 md:grid-cols-4">
       {initial && (
-        <p className="rounded-md bg-accent/10 px-3 py-2 text-sm text-accent-dark md:col-span-4">
+        <p className="rounded-lg border border-accent/20 bg-accent/10 px-3 py-2 text-sm text-accent-soft md:col-span-4">
           AI filled in these details. Check them, then create the task.
         </p>
       )}

@@ -97,30 +97,30 @@ export default function TaskPage() {
     }
   }
 
-  if (error) {
+    if (error) {
     return (
       <div>
-        <p className="text-red-600">{error}</p>
-        <Link href="/projects" className="mt-2 inline-block text-sm font-semibold text-accent">Back to projects</Link>
+        <p className="text-danger">{error}</p>
+        <Link href="/projects" className="link mt-2 inline-block text-sm">Back to projects</Link>
       </div>
     );
   }
-  if (!task) return <p className="text-sm text-muted">Loading task...</p>;
+  if (!task) return <p className="animate-pulse text-sm text-faint">Loading task...</p>;
 
   const detailsChanged = title !== task.title || description !== (task.description ?? "");
 
   return (
     <div>
-      <Link href={`/projects/${task.projectId}`} className="text-sm font-medium text-muted hover:text-ink">
-        Back to board
+      <Link href={`/projects/${task.projectId}`} className="eyebrow transition-colors hover:text-ink">
+        &larr; Back to board
       </Link>
 
-      <div className="mt-3 grid gap-6 lg:grid-cols-[1fr_300px]">
+      <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_320px]">
         {/* Main column: details and comments */}
         <div className="space-y-6">
-          <form onSubmit={saveDetails} className="panel space-y-4 p-5">
-            <span className="text-sm font-bold text-muted">{task.key}</span>
-            <input aria-label="Title" className="input text-lg font-bold" value={title}
+          <form onSubmit={saveDetails} className="panel space-y-4 p-6">
+            <span className="text-xs font-bold tracking-[0.2em] text-accent-soft">{task.key}</span>
+            <input aria-label="Title" className="input border-transparent bg-transparent px-0 text-2xl font-bold focus:border-transparent focus:ring-0" value={title}
               onChange={(e) => setTitle(e.target.value)} required />
             <div>
               <label htmlFor="desc" className="label">Description</label>
@@ -128,25 +128,26 @@ export default function TaskPage() {
                 placeholder="Add more detail, links or acceptance criteria"
                 onChange={(e) => setDescription(e.target.value)} />
             </div>
-            {detailsChanged && <button className="btn-primary">Save changes</button>}
-            <TaskSummaryCard taskId={task.id} />
+            {detailsChanged && <button className="btn-primary animate-fade-up">Save changes</button>}
           </form>
 
-          <section className="panel p-5">
+          <TaskSummaryCard taskId={task.id} />
+
+          <section className="panel p-6">
             <h2 className="mb-4 font-bold">Comments</h2>
-            {comments.length === 0 && <p className="mb-4 text-sm text-muted">No comments yet. Start the discussion.</p>}
+            {comments.length === 0 && <p className="mb-4 text-sm text-faint">No comments yet. Start the discussion.</p>}
             <ul className="mb-4 space-y-4">
               {comments.map((comment) => (
-                <li key={comment.id} className="flex gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-bold">
+                <li key={comment.id} className="flex animate-fade-up gap-3">
+                  <span className="avatar h-8 w-8 text-xs">
                     {initials(comment.authorName)}
                   </span>
                   <div>
                     <p className="text-sm">
                       <span className="font-semibold">{comment.authorName}</span>{" "}
-                      <span className="text-muted">{timeAgo(comment.createdAt)}</span>
+                      <span className="text-faint">{timeAgo(comment.createdAt)}</span>
                     </p>
-                    <p className="mt-0.5 text-sm whitespace-pre-wrap">{comment.body}</p>
+                    <p className="mt-0.5 text-sm whitespace-pre-wrap text-ink/85">{comment.body}</p>
                   </div>
                 </li>
               ))}
@@ -163,7 +164,7 @@ export default function TaskPage() {
 
         {/* Side column: fields and activity */}
         <aside className="space-y-6">
-          <div className="panel space-y-4 p-5">
+          <div className="panel space-y-4 p-6">
             <div>
               <label htmlFor="status" className="label">Status</label>
               <select id="status" className="input" value={task.status}
@@ -199,22 +200,27 @@ export default function TaskPage() {
               <input id="due" type="date" className="input" value={task.dueDate ?? ""}
                 onChange={(e) => update({ dueDate: e.target.value || null })} />
             </div>
-            <p className="text-xs text-muted">Reported by {task.reporterName ?? "unknown"}</p>
+            <p className="text-xs text-faint">Reported by {task.reporterName ?? "unknown"}</p>
             {canDelete && (
-              <button onClick={deleteTask} className="text-sm font-semibold text-red-600 hover:underline">
+              <button onClick={deleteTask} className="text-sm font-semibold text-danger/80 transition-colors hover:text-danger">
                 Delete task
               </button>
             )}
           </div>
 
-          <div className="panel p-5">
-            <h2 className="mb-3 font-bold">Activity</h2>
-            {activity.length === 0 && <p className="text-sm text-muted">No activity yet.</p>}
-            <ol className="space-y-3">
-              {activity.map((entry) => (
-                <li key={entry._id} className="border-l-2 border-line pl-3 text-sm">
-                  <span className="font-semibold">{entry.userName}</span> {describeActivity(entry)}
-                  <p className="text-xs text-muted">{timeAgo(entry.createdAt)}</p>
+          <div className="panel p-6">
+            <h2 className="mb-4 font-bold">Activity</h2>
+            {activity.length === 0 && <p className="text-sm text-faint">No activity yet.</p>}
+            {/* Timeline: a thin line with a small ember dot for each event */}
+            <ol className="relative space-y-4 border-l border-line pl-5">
+              {activity.map((entry, i) => (
+                <li key={entry._id} className="relative animate-fade-up text-sm" style={{ animationDelay: `${i * 40}ms` }}>
+                  <span
+                    className={`absolute top-1.5 -left-[23.5px] h-2 w-2 rounded-full ${i === 0 ? "bg-accent shadow-[0_0_10px_var(--color-accent)]" : "bg-faint"}`}
+                  />
+                  <span className="font-semibold">{entry.userName}</span>{" "}
+                  <span className="text-muted">{describeActivity(entry)}</span>
+                  <p className="mt-0.5 text-xs text-faint">{timeAgo(entry.createdAt)}</p>
                 </li>
               ))}
             </ol>
