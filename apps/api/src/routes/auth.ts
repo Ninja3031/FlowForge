@@ -39,7 +39,7 @@ function sendSession(res: Response, user: UserRow, status = 200) {
     httpOnly: true,
     sameSite: "lax",
     secure: env.isProd,
-    path: "/auth",
+    path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   res.status(status).json({ accessToken, user: publicUser(user) });
@@ -139,7 +139,7 @@ authRouter.post("/logout", async (req, res) => {
       // Token already invalid, nothing to do
     }
   }
-  res.clearCookie(REFRESH_COOKIE, { path: "/auth" });
+  res.clearCookie(REFRESH_COOKIE, { path: "/" });
   res.status(204).end();
 });
 

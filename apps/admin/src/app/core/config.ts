@@ -1,2 +1,3 @@
-// Where the Node.js API runs. We'll make this configurable for production in Step 6.
-export const API_URL = 'http://localhost:4000';
+// Requests go to /api on this same site.
+// Locally, proxy.conf.json forwards them to port 4000. On Vercel, vercel.json forwards them to Render.
+export const API_URL = '/api';

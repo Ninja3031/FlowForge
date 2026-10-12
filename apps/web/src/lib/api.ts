@@ -3,10 +3,10 @@ import { store } from "@/store";
 import { sessionCleared, sessionStarted } from "@/store/authSlice";
 import type { SessionResponse } from "./types";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+// Requests go to /api on this same site. next.config.ts forwards them to the real API.
+const baseURL = "/api";
 
-// withCredentials lets the browser send the httpOnly refresh cookie
-export const api = axios.create({ baseURL, withCredentials: true });
+export const api = axios.create({ baseURL });
 
 // Attach the access token to every request
 api.interceptors.request.use((config) => {
@@ -21,7 +21,7 @@ let refreshPromise: Promise<string | null> | null = null;
 export function refreshSession(): Promise<string | null> {
   if (!refreshPromise) {
     refreshPromise = axios
-      .post<SessionResponse>(`${baseURL}/auth/refresh`, null, { withCredentials: true })
+      .post<SessionResponse>(`${baseURL}/auth/refresh`)
       .then((res) => {
         store.dispatch(sessionStarted(res.data));
         return res.data.accessToken;

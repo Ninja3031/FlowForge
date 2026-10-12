@@ -14,6 +14,9 @@ import { adminRouter } from "./routes/admin";
 export function createApp() {
   const app = express();
 
+  // Render and Vercel sit in front of the API, so trust their forwarded headers
+  app.set("trust proxy", 1);
+
   // credentials: true lets the browser send the refresh-token cookie
   app.use(
     cors({

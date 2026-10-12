@@ -12,6 +12,8 @@ export const env = {
   isProd: process.env.NODE_ENV === "production",
   port: Number(process.env.PORT ?? 4000),
   mysqlUrl: required("MYSQL_URL"),
+  // Hosted MySQL (like Aiven) needs SSL. Paste the CA certificate here in production.
+  mysqlCaCert: process.env.MYSQL_CA_CERT ?? "",
   mongoUrl: required("MONGO_URL"),
   redisUrl: required("REDIS_URL"),
   jwtAccessSecret: required("JWT_ACCESS_SECRET"),
