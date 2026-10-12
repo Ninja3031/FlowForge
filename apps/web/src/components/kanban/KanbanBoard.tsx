@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { createPortal } from "react-dom";
 import {
   DndContext,
   DragOverlay,
@@ -44,6 +45,9 @@ interface Props {
 export function KanbanBoard({ tasks, setTasks }: Props) {
   const dispatch = useAppDispatch();
   const [activeId, setActiveId] = useState<number | null>(null);
+  // The drag preview is rendered straight into <body> (see below), which only exists in the browser
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   // Copy of the board before dragging, used to undo if saving fails
   const snapshot = useRef<Task[]>([]);
 
@@ -152,13 +156,20 @@ export function KanbanBoard({ tasks, setTasks }: Props) {
         ))}
       </div>
       {/* The card you're holding: tilted, glowing, and eased back into place on drop */}
-      <DragOverlay dropAnimation={{ duration: 280, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
-        {activeTask && (
-          <div className="w-66 rotate-2 cursor-grabbing rounded-xl border border-accent/50 bg-raised p-3.5 shadow-2xl shadow-black/60 ring-1 ring-accent/20">
-            <TaskCardContent task={activeTask} />
-          </div>
+      {/* The card you're holding: tilted, glowing, and eased back into place on drop.
+          It's rendered into <body> so page animations around the board can't shift it
+          away from the cursor. */}
+      {mounted &&
+        createPortal(
+          <DragOverlay dropAnimation={{ duration: 280, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
+            {activeTask && (
+              <div className="rotate-2 cursor-grabbing rounded-xl border border-accent/50 bg-raised p-3.5 shadow-2xl shadow-black/60 ring-1 ring-accent/20">
+                <TaskCardContent task={activeTask} />
+              </div>
+            )}
+          </DragOverlay>,
+          document.body,
         )}
-      </DragOverlay>
     </DndContext>
   );
 }
